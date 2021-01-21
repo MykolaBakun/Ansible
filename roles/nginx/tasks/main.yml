@@ -5,6 +5,18 @@
     state: present
     update_cache: yes
 
+- name: Add nginx group
+  group:
+    name: nginx
+
+- name: Add "nginx" user
+  user:
+    name: nginx
+    group: nginx
+    home: /etc/nginx
+    createhome: no
+    system: yes
+
 - name: Delete nginx dir config
   file:
     path: /etc/nginx
@@ -14,14 +26,16 @@
   file:
     path: /etc/nginx
     state: directory
+    owner: nginx
+    group: nginx
     mode: '0644'
 
 - name: Create config
-  copy:
-    src: nginx.conf
+  template:
+    src: nginx.conf.j2
     dest: /etc/nginx/nginx.conf
-    owner: root
-    group: root
+    owner: nginx
+    group: nginx
     mode: 0644
  
 - name:  Add ports 80, 443 to firewalld
@@ -42,6 +56,9 @@
   copy:
     content: "[Service]\nExecStartPost=/bin/sleep 0.1\n"
     dest: /etc/systemd/system/nginx.service.d/override.conf
+    owner: nginx
+    group: nginx
+    mode: 0644
 
 - name: Start & Enble Nginx
   service:
@@ -49,4 +66,3 @@
     name: nginx
     state: started
     enabled: yes
-

@@ -4,5 +4,5 @@
 #app3
 
 [nginxbalancerserver]
-10.26.1.218 #Nginx LB
-
+#10.26.1.218 #Nginx LB
+10.26.3.19   #LoadBalanse
