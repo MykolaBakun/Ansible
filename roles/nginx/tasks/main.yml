@@ -1,0 +1,52 @@
+---
+- name: Install nginx
+  dnf:
+    name: nginx
+    state: present
+    update_cache: yes
+
+- name: Delete nginx dir config
+  file:
+    path: /etc/nginx
+    state: absent
+
+- name: Create a directory if it does not exist
+  file:
+    path: /etc/nginx
+    state: directory
+    mode: '0644'
+
+- name: Create config
+  copy:
+    src: nginx.conf
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: 0644
+ 
+- name:  Add ports 80, 443 to firewalld
+  firewalld:
+    service: "{{ item }}"
+    permanent: yes
+    state: enabled
+  loop:
+    - http
+    - https
+
+- name: reload service firewalld
+  systemd:
+    name: firewalld
+    state: reloaded
+
+- name: Create a nginx.service.d file
+  copy:
+    content: "[Service]\nExecStartPost=/bin/sleep 0.1\n"
+    dest: /etc/systemd/system/nginx.service.d/override.conf
+
+- name: Start & Enble Nginx
+  service:
+    daemon_reload: yes
+    name: nginx
+    state: started
+    enabled: yes
+

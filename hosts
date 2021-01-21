@@ -1,0 +1,8 @@
+[webserver]
+10.26.1.192 #app1
+10.26.1.199 #app2
+#app3
+
+[nginxbalancerserver]
+10.26.1.218 #Nginx LB
+
