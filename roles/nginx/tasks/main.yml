@@ -37,7 +37,7 @@
     owner: nginx
     group: nginx
     mode: 0644
- 
+
 - name:  Add ports 80, 443 to firewalld
   firewalld:
     service: "{{ item }}"
@@ -59,6 +59,15 @@
     owner: nginx
     group: nginx
     mode: 0644
+
+#- name: Set httpd_can_network_connect flag on and keep it persistent across reboots
+#  seboolean:
+#    name: httpd_can_network_connect
+#    state: yes
+#    persistent: yes
+
+- name: FIX BY COMMAND Set httpd flag
+  script: somescript.sh
 
 - name: Start & Enble Nginx
   service:

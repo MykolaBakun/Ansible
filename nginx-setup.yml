@@ -3,11 +3,12 @@
   hosts: nginxbalancerserver    # Inventory hosts group / server to act on
   become: yes               	# If to escalate privilege
   become_method: sudo       	# Set become method
-  #remote_user: root         	# Update username for remote server
+  remote_user: root         	# Update username for remote server
   
   vars:
     server1: 10.26.1.192:8080
     server2: 10.26.1.199:8080
+    server3: 10.26.3.17:8080
 
   roles:
     - nginx
