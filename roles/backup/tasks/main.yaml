@@ -1,0 +1,25 @@
+- name: Download gitbucket.war
+  get_url:
+    url: "{{ gitbucket_url }}"
+    dest: "/opt/tomcat/webapps/"
+
+- name: Install the latest version of Rsync
+  dnf:
+    name:
+      - rsync
+      - crontabs
+    state: latest
+
+- name: Start and enable crontab
+  service:
+    daemon_reload: yes
+    name: crond
+    state: started
+    enabled: yes
+
+- name: Add task "rsync" by cron
+  cron:
+    name: "do rsync"
+    day: "*/2"
+    job: "rsync -avzh /opt/tomcat/.gitbucket/ root@10.26.2.229:/home/tomcat/Backup/App/"
+
