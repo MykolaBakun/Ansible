@@ -1,0 +1,71 @@
+- name: Download node_exporter
+  get_url:
+    url: "{{ node_exporter_archive_url }}"
+    dest: "{{ node_exporter_archive_dest }}"
+
+- name: Add "node_exporter" group
+  group:
+    name: node_exporter
+
+- name: Add "node_exporter" user
+  user:
+    name: node_exporter
+    group: node_exporter
+    system: yes
+
+- name: Create a directory if it does not exist
+  file:
+    path: /home/node_exporter/node
+    state: directory
+    owner: node_exporter
+    group: node_exporter
+    mode: '0644'
+
+- name: Extract node_exporter archive
+  unarchive:
+    src: "{{ node_exporter_archive_dest }}"
+    dest: /home/node_exporter/node
+    owner: node_exporter
+    group: node_exporter
+    remote_src: yes
+    extra_opts: "--strip-components=1"
+    creates: /home/node_exporter/node/node_exporter
+
+- name: COPY FILE BY SCRIPT
+  shell:
+    cmd: cp /home/node_exporter/node/node_exporter /usr/local/bin/
+
+#- name: copy node_exporter files
+#  file:
+#    src: /home/node_exporter/node/node_exporter
+#    dest: /usr/local/bin/
+#    owner: root
+#    group: root
+#    state: hard
+
+- name: Copy node_exporter service file
+  template:
+    src: node_exporter.service.j2
+    dest: /etc/systemd/system/node_exporter.service
+    owner: node_exporter
+    group: node_exporter
+    mode: '0644'
+
+- name: Open 9100 port on the firewall by node_exporter
+  firewalld:
+    port: 9100/tcp
+    permanent: true
+    state: enabled
+
+- name: reload service firewalld
+  systemd:
+    name: firewalld
+    state: reloaded
+
+- name: Start and enable node_exporter
+  service:
+    daemon_reload: yes
+    name: node_exporter
+    state: started
+    enabled: yes
+

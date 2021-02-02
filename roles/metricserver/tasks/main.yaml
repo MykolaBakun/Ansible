@@ -1,0 +1,69 @@
+- name: Add EPEL repository
+  dnf:
+    name: epel-release
+    state: present
+
+- name: Install Java 8 CentOS
+  dnf:
+    name: java-1.8.0-openjdk
+    state: present
+
+- name: Download Tomcat
+  get_url:
+    url: "https://archive.apache.org/dist/tomcat/tomcat-9/v{{ tomcat_ver }}/bin/apache-tomcat-{{ tomcat_ver }}.tar.gz"
+    dest: "/tmp/apache-tomcat-{{ tomcat_ver }}.tar.gz"
+
+- name: Add tomcat group
+  group:
+    name: tomcat
+
+- name: Add "tomcat" user
+  user:
+    name: tomcat
+    group: tomcat
+    home: /opt/tomcat
+    createhome: no
+    system: yes
+
+- name: Create a tomcat directory
+  file:
+    path: /opt/tomcat
+    state: directory
+    owner: tomcat
+    group: tomcat
+
+- name: Extract tomcat archive
+  unarchive:
+    src: "/tmp/apache-tomcat-{{ tomcat_ver }}.tar.gz"
+    dest: /opt/tomcat
+    owner: tomcat
+    group: tomcat
+    remote_src: yes
+    extra_opts: "--strip-components=1"
+    creates: /opt/tomcat/bin
+
+- name: Copy tomcat service file
+  template:
+    src: templates/tomcat.service.j2
+    dest: /etc/systemd/system/tomcat.service
+    owner: tomcat
+    group: tomcat
+
+- name: Open tomcat port on the firewall
+  firewalld:
+    port: 8080/tcp
+    permanent: true
+    state: enabled
+
+- name: reload service firewalld
+  systemd:
+    name: firewalld
+    state: reloaded
+
+- name: Start and enable tomcat
+  service:
+    daemon_reload: yes
+    name: tomcat
+    state: started
+    enabled: yes
+

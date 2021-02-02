@@ -1,0 +1,20 @@
+---
+- name: Metrics deployment playbook in web servers
+  hosts: 
+    - webserver          
+    - nginxbalancerserver
+  become: yes               
+  become_method: sudo       
+  remote_user: root
+
+  roles:
+    - metrics
+
+#- name: Metric and Grafana deployment playbook in metric server
+#  hosts: metricserver          # Inventory hosts group / server to act on
+#  become: yes               # If to escalate privilege
+#  become_method: sudo       # Set become method
+#  remote_user: root         # Update username for remote server
+
+#  roles:
+#    - metricserver
