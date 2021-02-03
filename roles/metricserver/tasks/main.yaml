@@ -1,57 +1,91 @@
-- name: Add EPEL repository
-  dnf:
-    name: epel-release
-    state: present
-
-- name: Install Java 8 CentOS
-  dnf:
-    name: java-1.8.0-openjdk
-    state: present
-
-- name: Download Tomcat
+- name: Download prometheus
   get_url:
-    url: "https://archive.apache.org/dist/tomcat/tomcat-9/v{{ tomcat_ver }}/bin/apache-tomcat-{{ tomcat_ver }}.tar.gz"
-    dest: "/tmp/apache-tomcat-{{ tomcat_ver }}.tar.gz"
+    url: "{{ prometheus_archive_url }}"
+    dest: "{{ prometheus_archive_dest }}"
 
-- name: Add tomcat group
+- name: Add "prometheus" group
   group:
-    name: tomcat
+    name: prometheus
 
-- name: Add "tomcat" user
+- name: Add "prometheus" user
   user:
-    name: tomcat
-    group: tomcat
-    home: /opt/tomcat
-    createhome: no
+    name: prometheus
+    group: prometheus
     system: yes
 
-- name: Create a tomcat directory
-  file:
-    path: /opt/tomcat
-    state: directory
-    owner: tomcat
-    group: tomcat
-
-- name: Extract tomcat archive
+- name: Extract prometheus archive
   unarchive:
-    src: "/tmp/apache-tomcat-{{ tomcat_ver }}.tar.gz"
-    dest: /opt/tomcat
-    owner: tomcat
-    group: tomcat
+    src: "{{ prometheus_archive_dest }}"
+    dest: /home/prometheus/
+    owner: prometheus
+    group: prometheus
     remote_src: yes
-    extra_opts: "--strip-components=1"
-    creates: /opt/tomcat/bin
+    creates: "{{ home_promet }}/prometheus"
 
-- name: Copy tomcat service file
+#- name: COPY FILE BY SCRIPT
+#  shell:
+#    cmd: cp "{{ home_promet }}/prometheus" /usr/local/bin/
+
+#- name: COPY FILE BY SCRIPT
+#  shell:
+#    cmd: cp "{{ home_promet }}/promtool" /usr/local/bin/
+
+#- name: COPY FILE BY SCRIPT
+#  shell:
+#    cmd: cp -r {{ home_promet }}/consoles /etc/prometheus
+
+#- name: COPY FILE BY SCRIPT
+#  shell:
+#    cmd: cp -r {{ home_promet }}/console_libraries /etc/prometheus/
+
+
+#- name: copy prometheus files
+#  file:
+#    src: "{{ home_promet }}/prometheus"
+#    dest: /usr/local/bin/
+#    owner: prometheus
+#    group: prometheus
+#    state: hard
+
+#- name: copy prometheus files
+#  file:
+#    src: "{{ home_promet }}/promtool"
+#    dest: /usr/local/bin/
+#    owner: prometheus
+#    group: prometheus
+#    state: hard
+
+#- name: copy prometheus files
+#  file:
+#    src: "{{ home_promet }}/consoles"
+#    dest: /etc/prometheus/
+#    owner: prometheus
+#    group: prometheus
+#    recurse: yes
+#    state: directory
+
+#- name: copy prometheus files
+#  file:
+#    src: "{{ home_promet }}/console_libraries"
+#    dest: /etc/prometheus/
+#    owner: prometheus
+#    group: prometheus
+#    recurse: yes
+#    state: directory
+
+
+############
+- name: Copy prometheus service file
   template:
-    src: templates/tomcat.service.j2
-    dest: /etc/systemd/system/tomcat.service
-    owner: tomcat
-    group: tomcat
+    src: prometheus.service.j2
+    dest: /etc/systemd/system/prometheus.service
+    owner: prometheus
+    group: prometheus
+    mode: '0644'
 
-- name: Open tomcat port on the firewall
+- name: Open 9090 port on the firewall by prometheus
   firewalld:
-    port: 8080/tcp
+    port: 9090/tcp
     permanent: true
     state: enabled
 
@@ -60,10 +94,13 @@
     name: firewalld
     state: reloaded
 
-- name: Start and enable tomcat
-  service:
-    daemon_reload: yes
-    name: tomcat
-    state: started
-    enabled: yes
+#- name: Start and enable prometheus
+#  service:
+#    daemon_reload: yes
+#    name: prometheus
+#    state: started
+#    enabled: yes
 
+- name: START BY SHELL
+  shell: 
+    cmd: "{{home_promet}} &"

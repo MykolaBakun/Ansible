@@ -1,2 +1,3 @@
-tomcat_ver: 9.0.41
-JAVA_HOME: /usr/lib/jvm/jre
+prometheus_ver: 2.24.1
+
+home_promet: /home/prometheus/prometheus-{{ prometheus_ver }}.linux-amd64
