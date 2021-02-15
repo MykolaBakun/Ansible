@@ -2,7 +2,7 @@
 
 ansible-playbook -i hosts *-setup.yum --ask-pass
 
-Mykola
-dsfsdf
+Mykola/n
+dsfsdf</br>
 dfsdfs
 asfasf
