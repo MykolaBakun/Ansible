@@ -17,8 +17,13 @@
 #    url: "{{ setup_linux_url }}"
 #    dest: "{{ setup_linux_dest }}"
 
-- name: Download setup linux script
-  script: "curl -sS -O http://{{ nagioslogserver }}/nagioslogserver/scripts/setup-linux.sh"
+# - name: Download setup linux script
+#  script: "curl -sS -O http://{{ nagioslogserver }}/nagioslogserver/scripts/setup-linux.sh"
+
+- name: Copy setup linux script
+  copy:
+    src: setup-linux.sh
+    dest: "{{ setup_linux_dest }}"
 
 - name: Open 5544 port on the firewall
   firewalld:
