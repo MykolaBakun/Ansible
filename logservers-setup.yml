@@ -1,0 +1,23 @@
+---
+#- name: Configure log in tomcats servers
+#  hosts: webserver
+#  become: yes
+#  become_method: sudo
+#  remote_user: root
+#  vars:
+#    nagioslogserver: 10.26.2.67
+
+#  roles:
+#    - tomcatlogservers
+
+- name: Configure log in nginx server
+  hosts: nginxbalancerserver
+  become: yes
+  become_method: sudo
+  remote_user: root
+  vars:
+    nagioslogserver: 10.26.2.67
+
+  roles:
+    - nginxlogservers
+

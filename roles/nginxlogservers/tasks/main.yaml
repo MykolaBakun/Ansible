@@ -1,0 +1,38 @@
+- name: Install rsync policy
+  dnf:
+    name: policycoreutils-python-utils
+    state: present
+
+- name: Change the syslogd_t
+  selinux_permissive:
+    name: syslogd_t
+    permissive: true
+
+- name: Set time zone
+  timezone:
+    name: Europe/Kiev
+
+#- name: Download setup linux script
+#  get_url:
+#    url: "{{ setup_linux_url }}"
+#    dest: "{{ setup_linux_dest }}"
+
+- name: Download setup linux script
+  script: "curl -sS -O http://{{ nagioslogserver }}/nagioslogserver/scripts/setup-linux.sh"
+
+- name: Open 5544 port on the firewall
+  firewalld:
+    port: 5544/tcp
+    permanent: true
+    state: enabled
+
+- name: reload service firewalld
+  systemd:
+    name: firewalld
+    state: reloaded
+
+- name: Run Script ( add access log to nagioslogserver )
+  script: "{{ setup_linux_dest }}/setup-linux.sh -s {{ nagioslogserver }} -p 5544 -f {{ nginx_access_log }} -t access_logs"
+
+- name: Run Script ( add error log to nagioslogserver )
+  script: "{{ setup_linux_dest }}/setup-linux.sh -s {{ nagioslogserver }} -p 5544 -f {{ nginx_error_log }} -t error_logs"

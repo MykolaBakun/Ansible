@@ -1,0 +1,3 @@
+---
+setup_linux_url: "https://{{ nagioslogserver }}/nagioslogserver/scripts/setup-linux.sh"
+setup_linux_dest: ~
