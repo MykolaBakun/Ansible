@@ -1,3 +1,6 @@
+- name: Run my script to configure
+  script: somescript.sh
+
 - name: Install rsync policy
   dnf:
     name: policycoreutils-python-utils
@@ -12,10 +15,10 @@
   timezone:
     name: Europe/Kiev
 
-- name: Download setup linux script
-  get_url:
-    url: "{{ setup_linux_url }}"
-    dest: "{{ setup_linux_dest }}"
+#- name: Download setup linux script
+#  get_url:
+#    url: "{{ setup_linux_url }}"
+#    dest: "{{ setup_linux_dest }}"
 
 #- name: Download setup linux script by script
 #  script: "curl -sS -O http://{{ nagioslogserver }}/nagioslogserver/scripts/setup-linux.sh"
@@ -31,5 +34,5 @@
     name: firewalld
     state: reloaded
 
-- name: Run Script
-  script: "{{ setup_linux_dest }}/setup-linux.sh -s {{ nagioslogserver }} -p 5544 -f {{ tomcat_catalina_log }} -t tomcat_logs"
+#- name: Run Script
+#  script: "{{ setup_linux_dest }}/setup-linux.sh -s {{ nagioslogserver }} -p 5544 -f {{ tomcat_catalina_log }} -t tomcat_logs"
